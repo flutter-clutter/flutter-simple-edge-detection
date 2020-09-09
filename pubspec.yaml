@@ -1,0 +1,27 @@
+name: simple_edge_detection
+description: A Flutter plugin enabling the user to detect edges of a given image. It returns the relative coordinates of the detection rectangle.
+version: 0.0.1
+author: flutterclutter.dev
+homepage: https://www.flutterclutter.dev
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+  flutter: ">=1.17.0 <2.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  ffi: ^0.1.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: dev.flutterclutter.simple_edge_detection
+        pluginClass: SimpleEdgeDetectionPlugin
+      ios:
+        pluginClass: SimpleEdgeDetectionPlugin
