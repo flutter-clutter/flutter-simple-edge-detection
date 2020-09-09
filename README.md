@@ -55,3 +55,7 @@ EdgeDetectionResult result = await EdgeDetector().detectEdges(filePath);
 ## Technical information
 
 This package uses the OpenCV C++ library version 4.4.0 to perform the detection task. It utilizes Dart-FFI to execute the native code. 
+
+## Tutorial / Infos / Article
+
+Find the respective tutorial about how everything was created and how it's to be used on https://www.flutterclutter.dev/flutter/tutorials/implementing-edge-detection-in-flutter/2020/1509/
