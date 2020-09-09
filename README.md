@@ -26,16 +26,16 @@ cp -R opencv2.framework project_root/ios
 
 ## Getting Started
 
-### Add plugin as dependency：
+### Add plugin as dependency
 In order to use the package, please verify you have added the latest version to you pubspec.yml:
 ```
 dependencies:
   flutter:
     sdk: flutter
-  simple_edge_detection: ^0.0.1
+  simple_edge_detection: local_path_to_this_repository
 ```
 
-### Import the package in your code:
+### Import the package in your code
 ```
 import 'package:simple_edge_detection/edge_detection.dart';
 ```
