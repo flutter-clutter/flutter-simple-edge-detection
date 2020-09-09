@@ -5,7 +5,7 @@ A Flutter plugin enabling the user to detect edges of a given image. It returns 
 ## Demo
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/flutterclutter/flutter-simple-edge-detection/master/media/flutter-edge-detection-animation.gif">
+  <img src="https://raw.githubusercontent.com/flutter-clutter/flutter-simple-edge-detection/master/media/flutter-edge-detection-animation.gif">
 </p>
 
 ## Try out
