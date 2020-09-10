@@ -7,9 +7,9 @@ import 'package:simple_edge_detection/edge_detection.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:simple_edge_detection_example/image_preview.dart';
 
 import 'camera_view.dart';
-import 'edge_detection_preview.dart';
 import 'edge_detector.dart';
 
 class Scan extends StatefulWidget {
@@ -50,7 +50,7 @@ class _ScanState extends State<Scan> {
       );
     }
 
-    return EdgeDetectionPreview(
+    return ImagePreview(
       imagePath: imagePath,
       edgeDetectionResult: edgeDetectionResult,
     );
