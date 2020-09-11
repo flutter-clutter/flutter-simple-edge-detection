@@ -7,3 +7,8 @@
 build/
 
 example/build
+example/.idea
+
+*.iml
+
+.idea
