@@ -23,33 +23,31 @@ class _TouchBubbleState extends State<TouchBubble> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: (_) => _startDragging(),
-        onPanStart: (_) => _startDragging(),
-        onTapUp: (_) => _cancelDragging(),
-        onTapCancel: _cancelDragging,
-        onPanUpdate: _drag,
-        onPanCancel: _cancelDragging,
-        onPanEnd: (_) => _cancelDragging(),
-        child: Container(
-            width: widget.size,
-            height: widget.size,
-            decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(widget.size / 2)
-            ),
-            child: AnimatedTouchBubblePart(
-              dragging: dragging,
-              size: widget.size,
-            )
+      behavior: HitTestBehavior.opaque,
+      onPanStart: _startDragging,
+      onPanUpdate: _drag,
+      onPanCancel: _cancelDragging,
+      onPanEnd: (_) => _cancelDragging(),
+      child: Container(
+        width: widget.size,
+        height: widget.size,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(widget.size / 2)
+        ),
+        child: AnimatedTouchBubblePart(
+          dragging: dragging,
+          size: widget.size,
         )
+      )
     );
   }
 
-  void _startDragging() {
+  void _startDragging(DragStartDetails data) {
     setState(() {
       dragging = true;
     });
+    widget.onDrag(data.localPosition - Offset(widget.size / 2, widget.size / 2));
   }
 
   void _cancelDragging() {
@@ -63,6 +61,7 @@ class _TouchBubbleState extends State<TouchBubble> {
     if (!dragging) {
       return;
     }
+
     widget.onDrag(data.delta);
   }
 }
