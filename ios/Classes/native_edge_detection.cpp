@@ -1,5 +1,6 @@
 #include "native_edge_detection.hpp"
 #include "edge_detector.hpp"
+#include "image_processor.hpp"
 #include <stdlib.h>
 #include <opencv2/opencv.hpp>
 
@@ -46,4 +47,33 @@ struct DetectionResult *detect_edges(char *str) {
         create_coordinate((double)points[2].x / mat.size().width, (double)points[2].y / mat.size().height),
         create_coordinate((double)points[3].x / mat.size().width, (double)points[3].y / mat.size().height)
     );
+}
+
+extern "C" __attribute__((visibility("default"))) __attribute__((used))
+bool process_image(
+    char *path,
+    double topLeftX,
+    double topLeftY,
+    double topRightX,
+    double topRightY,
+    double bottomLeftX,
+    double bottomLeftY,
+    double bottomRightX,
+    double bottomRightY
+) {
+    cv::Mat mat = cv::imread(path);
+
+    cv::Mat resizedMat = ImageProcessor::process_image(
+        mat,
+        topLeftX * mat.size().width,
+        topLeftY * mat.size().height,
+        topRightX * mat.size().width,
+        topRightY * mat.size().height,
+        bottomLeftX * mat.size().width,
+        bottomLeftY * mat.size().height,
+        bottomRightX * mat.size().width,
+        bottomRightY * mat.size().height
+    );
+
+    return cv::imwrite(path, resizedMat);
 }
