@@ -1,8 +1,0 @@
-# ninja log v5
-0	1646	0	CMakeFiles/native_edge_detection.dir/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/ios/Classes/native_edge_detection.cpp.o	a138c989e71cd536
-0	1922	0	CMakeFiles/native_edge_detection.dir/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/ios/Classes/edge_detector.cpp.o	45831cf3c4bf87f6
-1922	1969	0	/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/example/build/simple_edge_detection/intermediates/cmake/debug/obj/arm64-v8a/libnative_edge_detection.so	2eae524063503527
-0	1647	0	CMakeFiles/native_edge_detection.dir/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/ios/Classes/edge_detector.cpp.o	45831cf3c4bf87f6
-1647	1692	0	/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/example/build/simple_edge_detection/intermediates/cmake/debug/obj/arm64-v8a/libnative_edge_detection.so	2eae524063503527
-1	2499	0	CMakeFiles/native_edge_detection.dir/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/ios/Classes/edge_detector.cpp.o	45831cf3c4bf87f6
-2499	2547	0	/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/example/build/simple_edge_detection/intermediates/cmake/debug/obj/arm64-v8a/libnative_edge_detection.so	2eae524063503527

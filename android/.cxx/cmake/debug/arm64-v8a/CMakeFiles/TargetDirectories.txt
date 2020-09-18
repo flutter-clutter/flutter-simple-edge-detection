@@ -1,3 +1,0 @@
-/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/android/.cxx/cmake/debug/arm64-v8a/CMakeFiles/edit_cache.dir
-/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/android/.cxx/cmake/debug/arm64-v8a/CMakeFiles/rebuild_cache.dir
-/home/marc/dev/projects/flutterclutter/articles/edge-detection/projects/simple_edge_detection/android/.cxx/cmake/debug/arm64-v8a/CMakeFiles/native_edge_detection.dir
