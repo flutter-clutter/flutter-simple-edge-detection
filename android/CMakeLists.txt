@@ -6,6 +6,7 @@ set(EDGE_DETECTION_DIR "../ios/Classes")
 set(SOURCES
     ${EDGE_DETECTION_DIR}/native_edge_detection.cpp
     ${EDGE_DETECTION_DIR}/edge_detector.cpp
+    ${EDGE_DETECTION_DIR}/image_processor.cpp
 )
 add_library(native_edge_detection SHARED ${SOURCES})
 target_link_libraries(native_edge_detection lib_opencv)

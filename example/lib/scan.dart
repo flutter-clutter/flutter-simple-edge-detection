@@ -7,10 +7,11 @@ import 'package:simple_edge_detection/edge_detection.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:simple_edge_detection_example/image_preview.dart';
+import 'package:simple_edge_detection_example/cropping_preview.dart';
 
 import 'camera_view.dart';
 import 'edge_detector.dart';
+import 'image_view.dart';
 
 class Scan extends StatefulWidget {
   @override
@@ -21,6 +22,7 @@ class _ScanState extends State<Scan> {
   CameraController controller;
   List<CameraDescription> cameras;
   String imagePath;
+  String croppedImagePath;
   EdgeDetectionResult edgeDetectionResult;
 
   @override
@@ -44,6 +46,10 @@ class _ScanState extends State<Scan> {
   }
 
   Widget _getMainWidget() {
+    if (croppedImagePath != null) {
+      return ImageView(imagePath: croppedImagePath);
+    }
+
     if (imagePath == null && edgeDetectionResult == null) {
       return CameraView(
         controller: controller
@@ -91,12 +97,18 @@ class _ScanState extends State<Scan> {
       return Align(
         alignment: Alignment.bottomCenter,
         child: FloatingActionButton(
-          //foregroundColor: Colors.white,
-          child: Icon(Icons.arrow_back),
+          child: Icon(Icons.check),
           onPressed: () {
+            if (croppedImagePath == null) {
+              return _processImage(
+                imagePath, edgeDetectionResult
+              );
+            }
+
             setState(() {
-              edgeDetectionResult = null;
               imagePath = null;
+              edgeDetectionResult = null;
+              croppedImagePath = null;
             });
           },
         ),
@@ -163,6 +175,24 @@ class _ScanState extends State<Scan> {
     });
   }
 
+  Future _processImage(String filePath, EdgeDetectionResult edgeDetectionResult) async {
+    if (!mounted || filePath == null) {
+      return;
+    }
+
+    bool result = await EdgeDetector().processImage(filePath, edgeDetectionResult);
+
+    if (result == false) {
+      return;
+    }
+
+    setState(() {
+      imageCache.clearLiveImages();
+      imageCache.clear();
+      croppedImagePath = imagePath;
+    });
+  }
+
   void onTakePictureButtonPressed() async {
     String filePath = await takePicture();
 
@@ -172,8 +202,8 @@ class _ScanState extends State<Scan> {
   }
 
   void _onGalleryButtonPressed() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    ImagePicker picker = ImagePicker();
+    PickedFile pickedFile = await picker.getImage(source: ImageSource.gallery);
     final filePath = pickedFile.path;
 
     log('Picture saved to $filePath');

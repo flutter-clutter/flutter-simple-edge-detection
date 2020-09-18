@@ -9,35 +9,61 @@ class EdgeDetector {
     edgeDetectionInput.sendPort.send(result);
   }
 
-  Future<EdgeDetectionResult> detectEdges(String filePath) async {
-    // Creating a port for communication with isolate and arguments for entry point
-    final port = ReceivePort();
-    //final args = ProcessImageArguments(image.path, tempPath);
+  static Future<void> processImageIsolate(ProcessImageInput processImageInput) async {
+    EdgeDetection.processImage(processImageInput.inputPath, processImageInput.edgeDetectionResult);
+    processImageInput.sendPort.send(true);
+  }
 
-    // Spawning an isolate
-    Isolate.spawn<EdgeDetectionInput>(
-      startEdgeDetectionIsolate,
-      EdgeDetectionInput(
+  Future<EdgeDetectionResult> detectEdges(String filePath) async {
+    final port = ReceivePort();
+
+    _spawnIsolate<EdgeDetectionInput>(
+        startEdgeDetectionIsolate,
+        EdgeDetectionInput(
+          inputPath: filePath,
+          sendPort: port.sendPort
+        ),
+        port
+    );
+
+    return await _subscribeToPort<EdgeDetectionResult>(port);
+  }
+
+  Future<bool> processImage(String filePath, EdgeDetectionResult edgeDetectionResult) async {
+    final port = ReceivePort();
+
+    _spawnIsolate<ProcessImageInput>(
+      processImageIsolate,
+      ProcessImageInput(
         inputPath: filePath,
+        edgeDetectionResult: edgeDetectionResult,
         sendPort: port.sendPort
       ),
+      port
+    );
+
+    return await _subscribeToPort<bool>(port);
+  }
+
+  void _spawnIsolate<T>(Function function, dynamic input, ReceivePort port) {
+    Isolate.spawn<T>(
+      function,
+      input,
       onError: port.sendPort,
       onExit: port.sendPort
     );
+  }
 
-    // Making a variable to store a subscription in
+  Future<T> _subscribeToPort<T>(ReceivePort port) async {
     StreamSubscription sub;
-
-    // Listening for messages on port
-
-    var completer = new Completer<EdgeDetectionResult>();
-
+    
+    var completer = new Completer<T>();
+    
     sub = port.listen((result) async {
-      // Cancel a subscription after message received called
       await sub?.cancel();
       completer.complete(await result);
     });
-
+    
     return completer.future;
   }
 }
@@ -49,5 +75,17 @@ class EdgeDetectionInput {
   });
 
   String inputPath;
+  SendPort sendPort;
+}
+
+class ProcessImageInput {
+  ProcessImageInput({
+    this.inputPath,
+    this.edgeDetectionResult,
+    this.sendPort
+  });
+
+  String inputPath;
+  EdgeDetectionResult edgeDetectionResult;
   SendPort sendPort;
 }
