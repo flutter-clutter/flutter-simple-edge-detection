@@ -107,6 +107,27 @@ class EdgeDetection {
     );
   }
 
+  static Future<bool> processImage(String path, EdgeDetectionResult result) async {
+    DynamicLibrary nativeEdgeDetection = _getDynamicLibrary();
+
+    final processImage = nativeEdgeDetection
+        .lookup<NativeFunction<process_image_function>>("process_image")
+        .asFunction<ProcessImageFunction>();
+
+
+    return processImage(
+        Utf8.toUtf8(path),
+        result.topLeft.dx,
+        result.topLeft.dy,
+        result.topRight.dx,
+        result.topRight.dy,
+        result.bottomLeft.dx,
+        result.bottomLeft.dy,
+        result.bottomRight.dx,
+        result.bottomRight.dy
+    ) == 1;
+  }
+
   static DynamicLibrary _getDynamicLibrary() {
     final DynamicLibrary nativeEdgeDetection = Platform.isAndroid
         ? DynamicLibrary.open("libnative_edge_detection.so")
