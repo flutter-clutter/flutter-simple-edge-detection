@@ -1,22 +1,21 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
+import 'magnifier_painter.dart';
+
 class Magnifier extends StatefulWidget {
   const Magnifier({
     @required this.child,
     @required this.position,
     this.visible = true,
-    this.scale = 2.0,
-    this.alignment = Alignment.topLeft,
-    this.size = const Size(160, 160),
-    Key key
-  }) : super(key: key);
+    this.scale = 1.5,
+    this.size = const Size(160, 160)
+  }) : assert(child != null);
 
   final Widget child;
   final Offset position;
   final bool visible;
   final double scale;
-  final Alignment alignment;
   final Size size;
 
   @override
@@ -41,19 +40,6 @@ class _MagnifierState extends State<Magnifier> {
   void didUpdateWidget(Magnifier oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (!widget.visible) {
-      return;
-    }
-
-    if (oldWidget.size != widget.size) {
-      _magnifierSize = widget.size;
-    }
-
-    if (oldWidget.scale != widget.scale) {
-      _scale = widget.scale;
-      _matrix = Matrix4.identity()..scale(_scale);
-    }
-
     _calculateMatrix();
   }
 
@@ -62,7 +48,7 @@ class _MagnifierState extends State<Magnifier> {
     return Stack(
       children: [
         widget.child,
-        if (widget.visible)
+        if (widget.visible && widget.position != null)
           _getMagnifier(context)
       ],
     );
@@ -77,6 +63,11 @@ class _MagnifierState extends State<Magnifier> {
       double newX =  widget.position.dx - (_magnifierSize.width / 2 / _scale);
       double newY =  widget.position.dy - (_magnifierSize.height / 2 / _scale);
 
+      if (_bubbleCrossesMagnifier()) {
+        final box = context.findRenderObject() as RenderBox;
+        newX -= ((box.size.width - _magnifierSize.width) / _scale);
+      }
+
       final Matrix4 updatedMatrix = Matrix4.identity()
         ..scale(_scale, _scale)
         ..translate(-newX, -newY);
@@ -87,7 +78,7 @@ class _MagnifierState extends State<Magnifier> {
 
   Widget _getMagnifier(BuildContext context) {
     return Align(
-      alignment: widget.alignment,
+      alignment: _getAlignment(),
       child: ClipOval(
         child: BackdropFilter(
           filter: ImageFilter.matrix(_matrix.storage),
@@ -101,34 +92,15 @@ class _MagnifierState extends State<Magnifier> {
       ),
     );
   }
-}
 
-class MagnifierPainter extends CustomPainter {
-  const MagnifierPainter({
-    @required this.color,
-    this.strokeWidth = 5
-  });
+  Alignment _getAlignment() {
+    if (_bubbleCrossesMagnifier()) {
+      return Alignment.topRight;
+    }
 
-  final double strokeWidth;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    Paint paintObject = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = strokeWidth
-      ..color = color;
-
-    canvas.drawCircle(
-      size.center(
-        Offset(0, 0)
-      ),
-      size.longestSide / 2, paintObject
-    );
+    return Alignment.topLeft;
   }
 
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
-  }
+  bool _bubbleCrossesMagnifier() => widget.position.dx < widget.size.width &&
+      widget.position.dy < widget.size.height;
 }
