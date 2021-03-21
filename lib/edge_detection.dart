@@ -14,7 +14,7 @@ class Coordinate extends Struct {
   double y;
 
   factory Coordinate.allocate(double x, double y) =>
-      allocate<Coordinate>().ref
+      malloc<Coordinate>().ref
         ..x = x
         ..y = y;
 }
@@ -30,7 +30,7 @@ class NativeDetectionResult extends Struct {
       Pointer<Coordinate> topRight,
       Pointer<Coordinate> bottomLeft,
       Pointer<Coordinate> bottomRight) =>
-      allocate<NativeDetectionResult>().ref
+      malloc<NativeDetectionResult>().ref
         ..topLeft = topLeft
         ..topRight = topRight
         ..bottomLeft = bottomLeft
@@ -89,7 +89,7 @@ class EdgeDetection {
         .lookup<NativeFunction<DetectEdgesFunction>>("detect_edges")
         .asFunction<DetectEdgesFunction>();
 
-    NativeDetectionResult detectionResult = detectEdges(Utf8.toUtf8(path)).ref;
+    NativeDetectionResult detectionResult = detectEdges(path.toNativeUtf8()).ref;
 
     return EdgeDetectionResult(
         topLeft: Offset(
@@ -116,7 +116,7 @@ class EdgeDetection {
 
 
     return processImage(
-        Utf8.toUtf8(path),
+        path.toNativeUtf8(),
         result.topLeft.dx,
         result.topLeft.dy,
         result.topRight.dx,
