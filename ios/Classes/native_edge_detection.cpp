@@ -59,7 +59,8 @@ bool process_image(
     double bottomLeftX,
     double bottomLeftY,
     double bottomRightX,
-    double bottomRightY
+    double bottomRightY,
+    double rotation
 ) {
     cv::Mat mat = cv::imread(path);
 
@@ -72,7 +73,8 @@ bool process_image(
         bottomLeftX * mat.size().width,
         bottomLeftY * mat.size().height,
         bottomRightX * mat.size().width,
-        bottomRightY * mat.size().height
+        bottomRightY * mat.size().height,
+        rotation
     );
 
     return cv::imwrite(path, resizedMat);

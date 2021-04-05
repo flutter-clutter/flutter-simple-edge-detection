@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:isolate';
 import 'dart:ui';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,8 @@ typedef process_image_function = Int8 Function(
   Double bottomLeftX,
   Double bottomLeftY,
   Double bottomRightX,
-  Double bottomRightY
+  Double bottomRightY,
+  Double rotation
 );
 
 typedef ProcessImageFunction = int Function(
@@ -76,7 +78,8 @@ typedef ProcessImageFunction = int Function(
   double bottomLeftX,
   double bottomLeftY,
   double bottomRightX,
-  double bottomRightY
+  double bottomRightY,
+  double rotation
 );
 
 // https://github.com/dart-lang/samples/blob/master/ffi/structs/structs.dart
@@ -107,7 +110,7 @@ class EdgeDetection {
     );
   }
 
-  static Future<bool> processImage(String path, EdgeDetectionResult result) async {
+  static Future<bool> processImage(String path, EdgeDetectionResult result,double rotation) async {
     DynamicLibrary nativeEdgeDetection = _getDynamicLibrary();
 
     final processImage = nativeEdgeDetection
@@ -124,7 +127,8 @@ class EdgeDetection {
         result.bottomLeft.dx,
         result.bottomLeft.dy,
         result.bottomRight.dx,
-        result.bottomRight.dy
+        result.bottomRight.dy,
+        rotation
     ) == 1;
   }
 
@@ -134,4 +138,80 @@ class EdgeDetection {
         : DynamicLibrary.process();
     return nativeEdgeDetection;
   }
+}
+
+class EdgeDetector {
+  static Future<void> startEdgeDetectionIsolate(
+      EdgeDetectionInput edgeDetectionInput) async {
+    EdgeDetectionResult result =
+    await EdgeDetection.detectEdges(edgeDetectionInput.inputPath);
+    edgeDetectionInput.sendPort.send(result);
+  }
+
+  static Future<void> processImageIsolate(
+      ProcessImageInput processImageInput) async {
+    EdgeDetection.processImage(processImageInput.inputPath,
+        processImageInput.edgeDetectionResult, processImageInput.rotation);
+    processImageInput.sendPort.send(true);
+  }
+
+  Future<EdgeDetectionResult> detectEdges(String filePath) async {
+    final port = ReceivePort();
+
+    _spawnIsolate<EdgeDetectionInput>(startEdgeDetectionIsolate,
+        EdgeDetectionInput(inputPath: filePath, sendPort: port.sendPort), port);
+
+    return await _subscribeToPort<EdgeDetectionResult>(port);
+  }
+
+  Future<bool> processImage(String filePath,
+      EdgeDetectionResult edgeDetectionResult, double rot) async {
+    final port = ReceivePort();
+
+    _spawnIsolate<ProcessImageInput>(
+        processImageIsolate,
+        ProcessImageInput(
+            inputPath: filePath,
+            edgeDetectionResult: edgeDetectionResult,
+            rotation: rot,
+            sendPort: port.sendPort),
+        port);
+
+    return await _subscribeToPort<bool>(port);
+  }
+
+  void _spawnIsolate<T>(Function function, dynamic input, ReceivePort port) {
+    Isolate.spawn<T>(function, input,
+        onError: port.sendPort, onExit: port.sendPort);
+  }
+
+  Future<T> _subscribeToPort<T>(ReceivePort port) async {
+    StreamSubscription sub;
+
+    var completer = new Completer<T>();
+
+    sub = port.listen((result) async {
+      await sub?.cancel();
+      completer.complete(await result);
+    });
+
+    return completer.future;
+  }
+}
+
+class EdgeDetectionInput {
+  EdgeDetectionInput({this.inputPath, this.sendPort});
+
+  String inputPath;
+  SendPort sendPort;
+}
+
+class ProcessImageInput {
+  ProcessImageInput(
+      {this.inputPath, this.edgeDetectionResult, this.rotation, this.sendPort});
+
+  String inputPath;
+  EdgeDetectionResult edgeDetectionResult;
+  SendPort sendPort;
+  double rotation;
 }

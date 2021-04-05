@@ -9,13 +9,26 @@ Point2f computePoint(int p1, int p2) {
     pt.y = p2;
     return pt;
 }
+Mat rotate(Mat src,double angle){
+    cv::Point2f center((src.cols-1)/2.0, (src.rows-1)/2.0);
+    cv::Mat rot = cv::getRotationMatrix2D(center, angle, 1.0);
+    // determine bounding rectangle, center not relevant
+    cv::Rect2f bbox = cv::RotatedRect(cv::Point2f(), src.size(), angle).boundingRect2f();
+    // adjust transformation matrix
+    rot.at<double>(0,2) += bbox.width/2.0 - src.cols/2.0;
+    rot.at<double>(1,2) += bbox.height/2.0 - src.rows/2.0;
 
-Mat ImageProcessor::process_image(Mat img, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
+    cv::Mat dst;
+    cv::warpAffine(src, dst, rot, bbox.size());
+    return dst;
+}
+Mat ImageProcessor::process_image(Mat img, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4,double rotation) {
     cvtColor(img, img, COLOR_BGR2GRAY);
     Mat dst = ImageProcessor::crop_and_transform(img, x1, y1, x2, y2, x3, y3, x4, y4);
-    adaptiveThreshold(dst, dst, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 53, 10);
+    Mat Another= rotate(dst,rotation);
+    adaptiveThreshold(Another, Another, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 53, 10);
 
-    return dst;
+    return Another;
 }
 
 Mat ImageProcessor::crop_and_transform(Mat img, float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
