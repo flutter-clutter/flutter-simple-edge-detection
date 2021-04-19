@@ -1,5 +1,7 @@
 # simple_edge_detection
 
+**Note: Substantial parts of the code described here have been created during my working relationship with [Truststone Software GmbH](https://www.truststone-software.com/).**
+
 A Flutter plugin enabling the user to detect edges of a given image. It returns the relative coordinates of the detection rectangle.
 
 ## Demo
