@@ -10,7 +10,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:simple_edge_detection_example/cropping_preview.dart';
 
 import 'camera_view.dart';
-import 'edge_detector.dart';
 import 'image_view.dart';
 
 class Scan extends StatefulWidget {
@@ -180,7 +179,8 @@ class _ScanState extends State<Scan> {
       return;
     }
 
-    bool result = await EdgeDetector().processImage(filePath, edgeDetectionResult);
+    double rotation=0;
+    bool result = await EdgeDetector().processImage(filePath, edgeDetectionResult,rotation);
 
     if (result == false) {
       return;

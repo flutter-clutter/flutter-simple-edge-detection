@@ -32,5 +32,6 @@ bool process_image(
     double bottomLeftX,
     double bottomLeftY,
     double bottomRightX,
-    double bottomRightY
+    double bottomRightY,
+    double rotation
 );
