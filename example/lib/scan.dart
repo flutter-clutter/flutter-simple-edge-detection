@@ -151,7 +151,7 @@ class _ScanState extends State<Scan> {
     }
 
     try {
-      await controller.takePicture(filePath);
+      await controller.takePicture();
     } on CameraException catch (e) {
       log(e.toString());
       return null;
